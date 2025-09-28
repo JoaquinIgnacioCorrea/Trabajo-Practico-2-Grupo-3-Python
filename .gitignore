@@ -205,3 +205,4 @@ saves/
 screenshots/
 logs/
 *.save
+lib/__pycache__/
