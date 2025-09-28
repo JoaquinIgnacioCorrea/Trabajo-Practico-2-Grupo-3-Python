@@ -39,9 +39,9 @@ class Game:
         pygame.display.set_caption("Math Runner")
         self.clock = pygame.time.Clock()
         
-        self.font_big = pygame.font.SysFont("arial", Var.FONT_SIZE_BIG, bold=True)
-        self.font_med = pygame.font.SysFont("arial", Var.FONT_SIZE_MED, bold=True)
-        self.font_small = pygame.font.SysFont("arial", Var.FONT_SIZE_SMALL)
+        self.font_big = pygame.font.SysFont("baloo", Var.FONT_SIZE_BIG, bold=True)
+        self.font_med = pygame.font.SysFont("baloo", Var.FONT_SIZE_MED, bold=True)
+        self.font_small = pygame.font.SysFont("baloo", Var.FONT_SIZE_SMALL)
         
         self.player = Player()
         self.gate_manager = GateManager()

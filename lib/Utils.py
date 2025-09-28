@@ -21,9 +21,9 @@ class Tutorial:
         pygame.init()
         self.screen = pygame.display.set_mode((Var.WIDTH, Var.HEIGHT))
         self.clock = pygame.time.Clock()
-        self.font_big = pygame.font.SysFont("arial", Var.FONT_SIZE_BIG, bold=True)
-        self.font_med = pygame.font.SysFont("arial", Var.FONT_SIZE_MED, bold=True)
-        self.font_small = pygame.font.SysFont("arial", Var.FONT_SIZE_SMALL)
+        self.font_big = pygame.font.SysFont("luckiest guy", Var.FONT_SIZE_BIG, bold=True)
+        self.font_med = pygame.font.SysFont("luckiest guy", Var.FONT_SIZE_MED, bold=True)
+        self.font_small = pygame.font.SysFont("luckiest guy", Var.FONT_SIZE_SMALL)
         self.running = True
     
     def show_tutorial(self):
