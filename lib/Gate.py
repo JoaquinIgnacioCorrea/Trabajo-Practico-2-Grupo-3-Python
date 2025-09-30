@@ -5,91 +5,111 @@ import lib.Color as Color
 
 class Gate:
     def __init__(self, operation, correct_answer, wrong_answer, correct_lane):
-        self.operation = operation
-        self.correct_answer = correct_answer
-        self.wrong_answer = wrong_answer
-        self.correct_lane = correct_lane
+        self._operation = operation
+        self._correct_answer = correct_answer
+        self._wrong_answer = wrong_answer
+        self._correct_lane = correct_lane
         
-        self.y = -100
-        self.width = 200
-        self.height = 100
-        self.speed = Var.INITIAL_SPEED
+        self._y = -100
+        self._width = 200
+        self._height = 100
+        self._speed = Var.INITIAL_SPEED
         
-        self.left_x = Var.LANE_LEFT_X
-        self.right_x = Var.LANE_RIGHT_X
+        self._left_x = Var.LANE_LEFT_X
+        self._right_x = Var.LANE_RIGHT_X
         
-        self.left_rect = pygame.Rect(self.left_x - self.width//2, self.y, self.width, self.height)
-        self.right_rect = pygame.Rect(self.right_x - self.width//2, self.y, self.width, self.height)
+        self._left_rect = pygame.Rect(self._left_x - self._width//2, self._y, self._width, self._height)
+        self._right_rect = pygame.Rect(self._right_x - self._width//2, self._y, self._width, self._height)
         
-        self.passed = False
-        self.answered = False
-        self.player_was_correct = False
-        self.player_chosen_lane = None
+        self._passed = False
+        self._answered = False
+        self._player_was_correct = False
+        self._player_chosen_lane = None
+    
+    def get_operation(self):
+        return self._operation
+    
+    def get_answered(self):
+        return self._answered
+    
+    def get_y(self):
+        return self._y
+    
+    def get_passed(self):
+        return self._passed
     
     def update(self, dt, speed):
-        self.speed = speed
-        self.y += self.speed * dt * 60
-        self.left_rect.y = self.y
-        self.right_rect.y = self.y
+        self._speed = speed
+        self._y += self._speed * dt * 60
+        self._left_rect.y = self._y
+        self._right_rect.y = self._y
         
-        if self.y > Var.HEIGHT + 50:
-            self.passed = True
+        if self._y > Var.HEIGHT + 50:
+            self._passed = True
     
     def check_collision(self, player):
-        if player.lane == "L":
-            return self.left_rect.colliderect(player.rect)
+        if player.get_lane() == "L":
+            return self._left_rect.colliderect(player.get_rect())
         else:
-            return self.right_rect.colliderect(player.rect)
+            return self._right_rect.colliderect(player.get_rect())
     
     def is_correct_choice(self, player_lane):
-        return player_lane == self.correct_lane
+        return player_lane == self._correct_lane
     
     def mark_answered(self, player_lane, was_correct):
-        self.answered = True
-        self.player_chosen_lane = player_lane
-        self.player_was_correct = was_correct
+        self._answered = True
+        self._player_chosen_lane = player_lane
+        self._player_was_correct = was_correct
     
     def draw(self, screen, font):
-        if not self.answered:
+        if not self._answered:
             left_color = Color.GRAY
             right_color = Color.GRAY
         else:
-            if self.player_chosen_lane == "L":
-                left_color = Color.GREEN if self.player_was_correct else Color.RED
-                right_color = Color.GREEN if self.correct_lane == "R" else Color.RED
+            if self._player_chosen_lane == "L":
+                left_color = Color.GREEN if self._player_was_correct else Color.RED
+                right_color = Color.GREEN if self._correct_lane == "R" else Color.RED
             else:
-                right_color = Color.GREEN if self.player_was_correct else Color.RED
-                left_color = Color.GREEN if self.correct_lane == "L" else Color.RED
+                right_color = Color.GREEN if self._player_was_correct else Color.RED
+                left_color = Color.GREEN if self._correct_lane == "L" else Color.RED
         
-        pygame.draw.rect(screen, left_color, self.left_rect)
-        pygame.draw.rect(screen, Color.DARK, self.left_rect, 3)
+        self._draw_door(screen, self._left_rect, left_color)
+        self._draw_door(screen, self._right_rect, right_color)
+        left_answer = self._correct_answer if self._correct_lane == "L" else self._wrong_answer
+        right_answer = self._correct_answer if self._correct_lane == "R" else self._wrong_answer
         
-        pygame.draw.rect(screen, right_color, self.right_rect)
-        pygame.draw.rect(screen, Color.DARK, self.right_rect, 3)
+        big_font = pygame.font.SysFont("Baloo", 48, bold=True)
         
-        operation_text = font.render(self.operation, True, Color.TEXT)
-        operation_y = max(self.y - 22, Var.TOP_SAFE_ZONE)
-        operation_rect = operation_text.get_rect(center=(Var.WIDTH//2, operation_y))
-        screen.blit(operation_text, operation_rect)
-        
-        left_answer = self.correct_answer if self.correct_lane == "L" else self.wrong_answer
-        right_answer = self.correct_answer if self.correct_lane == "R" else self.wrong_answer
-        
-        left_text = font.render(str(left_answer), True, Color.WHITE)
-        left_text_rect = left_text.get_rect(center=(self.left_x, self.y + self.height//2))
+        left_text = big_font.render(str(left_answer), True, Color.WHITE)
+        left_text_rect = left_text.get_rect(center=(self._left_x, self._y + self._height//2))
         screen.blit(left_text, left_text_rect)
         
-        right_text = font.render(str(right_answer), True, Color.WHITE)
-        right_text_rect = right_text.get_rect(center=(self.right_x, self.y + self.height//2))
+        right_text = big_font.render(str(right_answer), True, Color.WHITE)
+        right_text_rect = right_text.get_rect(center=(self._right_x, self._y + self._height//2))
         screen.blit(right_text, right_text_rect)
+    
+    def _draw_door(self, screen, rect, color):
+        door_surface = pygame.Surface((rect.width, rect.height), pygame.SRCALPHA)
+        corner_radius = 20
+        
+        pygame.draw.rect(door_surface, color, (0, corner_radius, rect.width, rect.height - corner_radius))
+        pygame.draw.rect(door_surface, color, (0, 0, rect.width, rect.height - corner_radius//2), 
+                        border_top_left_radius=corner_radius, border_top_right_radius=corner_radius)
+        pygame.draw.rect(door_surface, Color.DARK, (0, 0, rect.width, rect.height), 5,
+                        border_top_left_radius=corner_radius, border_top_right_radius=corner_radius)
+        
+        screen.blit(door_surface, rect.topleft)
 
 class GateManager:
     def __init__(self):
-        self.gates = []
-        self.spawn_timer = 0
-        self.spawn_interval = Var.INITIAL_SPAWN_INTERVAL
+        self._gates = []
+        self._spawn_timer = 0
+        self._spawn_interval = Var.INITIAL_SPAWN_INTERVAL
+    
+    def get_gates(self):
+        return self._gates
         
-    def generate_math_problem(self, level):
+    def _generate_math_problem(self, level):
         difficulty = min(level, 10)
         
         if difficulty <= 3:
@@ -138,35 +158,41 @@ class GateManager:
         return operation, correct, wrong, correct_lane
     
     def update(self, dt, level, speed):
-        self.spawn_timer += dt
+        self._spawn_timer += dt
         
         current_interval = max(
             Var.MIN_SPAWN_INTERVAL,
             Var.INITIAL_SPAWN_INTERVAL - (level - 1) * Var.SPAWN_INTERVAL_DECREASE
         )
         
-        if self.spawn_timer >= current_interval:
-            operation, correct, wrong, correct_lane = self.generate_math_problem(level)
+        if self._spawn_timer >= current_interval:
+            operation, correct, wrong, correct_lane = self._generate_math_problem(level)
             gate = Gate(operation, correct, wrong, correct_lane)
-            self.gates.append(gate)
-            self.spawn_timer = 0
+            self._gates.append(gate)
+            self._spawn_timer = 0
         
-        for gate in self.gates[:]:
+        for gate in self._gates[:]:
             gate.update(dt, speed)
-            if gate.passed:
-                self.gates.remove(gate)
+            if gate.get_passed():
+                self._gates.remove(gate)
     
     def check_collisions(self, player):
-        for gate in self.gates[:]:
-            if gate.check_collision(player) and not gate.answered:
-                is_correct = gate.is_correct_choice(player.lane)
-                gate.mark_answered(player.lane, is_correct)
+        for gate in self._gates[:]:
+            if gate.check_collision(player) and not gate.get_answered():
+                is_correct = gate.is_correct_choice(player.get_lane())
+                gate.mark_answered(player.get_lane(), is_correct)
                 return is_correct
         return None
     
+    def get_next_active_gate(self):
+        active_gates = [gate for gate in self._gates if not gate.get_answered()]
+        if active_gates:
+            return max(active_gates, key=lambda g: g.get_y())
+        return None
+    
     def draw(self, screen, font):
-        for gate in self.gates:
+        for gate in self._gates:
             gate.draw(screen, font)
     
     def clear(self):
-        self.gates.clear()
+        self._gates.clear()

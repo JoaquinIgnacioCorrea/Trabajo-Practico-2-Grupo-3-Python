@@ -8,144 +8,205 @@ from lib.SoundManager import SoundManager
 
 class GameState:
     def __init__(self):
-        self.score = Var.INITIAL_SCORE
-        self.lives = Var.INITIAL_LIVES
-        self.level = Var.INITIAL_LEVEL
-        self.combo = Var.INITIAL_COMBO
-        self.max_combo = 0
-        self.speed = Var.INITIAL_SPEED
-        self.game_over = False
-        self.running = True
+        self._score = Var.INITIAL_SCORE
+        self._lives = Var.INITIAL_LIVES
+        self._level = Var.INITIAL_LEVEL
+        self._combo = Var.INITIAL_COMBO
+        self._max_combo = 0
+        self._speed = Var.INITIAL_SPEED
+        self._game_over = False
+        self._running = True
+    
+    def get_score(self):
+        return self._score
+    
+    def set_score(self, score):
+        self._score = score
+    
+    def get_lives(self):
+        return self._lives
+    
+    def set_lives(self, lives):
+        self._lives = lives
+    
+    def get_level(self):
+        return self._level
+    
+    def set_level(self, level):
+        self._level = level
+    
+    def get_combo(self):
+        return self._combo
+    
+    def set_combo(self, combo):
+        self._combo = combo
+    
+    def get_max_combo(self):
+        return self._max_combo
+    
+    def set_max_combo(self, max_combo):
+        self._max_combo = max_combo
+    
+    def get_speed(self):
+        return self._speed
+    
+    def set_speed(self, speed):
+        self._speed = speed
+    
+    def get_game_over(self):
+        return self._game_over
+    
+    def set_game_over(self, game_over):
+        self._game_over = game_over
+    
+    def get_running(self):
+        return self._running
+    
+    def set_running(self, running):
+        self._running = running
     
     def reset(self):
-        self.score = Var.INITIAL_SCORE
-        self.lives = Var.INITIAL_LIVES
-        self.level = Var.INITIAL_LEVEL
-        self.combo = Var.INITIAL_COMBO
-        self.max_combo = 0
-        self.speed = Var.INITIAL_SPEED
-        self.game_over = False
+        self._score = Var.INITIAL_SCORE
+        self._lives = Var.INITIAL_LIVES
+        self._level = Var.INITIAL_LEVEL
+        self._combo = Var.INITIAL_COMBO
+        self._max_combo = 0
+        self._speed = Var.INITIAL_SPEED
+        self._game_over = False
     
     def update_level(self):
-        new_level = min(Var.MAX_LEVEL, 1 + self.score // (Var.SCORE_GAIN_BASE * Var.COMBO_LEVEL_UP_INTERVAL))
-        if new_level > self.level:
-            self.level = new_level
-            self.speed = min(Var.MAX_SPEED, Var.INITIAL_SPEED + (self.level - 1) * Var.SPEED_INCREASE)
+        new_level = min(Var.MAX_LEVEL, 1 + self._score // (Var.SCORE_GAIN_BASE * Var.COMBO_LEVEL_UP_INTERVAL))
+        if new_level > self._level:
+            self._level = new_level
+            self._speed = min(Var.MAX_SPEED, Var.INITIAL_SPEED + (self._level - 1) * Var.SPEED_INCREASE)
 
 class Game:
     def __init__(self):
         pygame.init()
-        self.screen = pygame.display.set_mode((Var.WIDTH, Var.HEIGHT))
+        self._screen = pygame.display.set_mode((Var.WIDTH, Var.HEIGHT))
         pygame.display.set_caption("Math Runner")
-        self.clock = pygame.time.Clock()
+        self._clock = pygame.time.Clock()
         
-        self.font_big = pygame.font.SysFont("baloo", Var.FONT_SIZE_BIG, bold=True)
-        self.font_med = pygame.font.SysFont("baloo", Var.FONT_SIZE_MED, bold=True)
-        self.font_small = pygame.font.SysFont("baloo", Var.FONT_SIZE_SMALL)
+        self._font_big = pygame.font.SysFont("Baloo", Var.FONT_SIZE_BIG, bold=True)
+        self._font_med = pygame.font.SysFont("Baloo", Var.FONT_SIZE_MED, bold=True)
+        self._font_small = pygame.font.SysFont("Baloo", Var.FONT_SIZE_SMALL)
         
-        self.player = Player()
-        self.gate_manager = GateManager()
-        self.game_ui = GameUI()
-        self.game_over_screen = GameOverScreen()
-        self.sound_manager = SoundManager()
-        self.game_state = GameState()
+        self._player = Player()
+        self._gate_manager = GateManager()
+        self._game_ui = GameUI()
+        self._game_over_screen = GameOverScreen()
+        self._sound_manager = SoundManager()
+        self._game_state = GameState()
         
-        self.sound_manager.play_background_music()
+        self._sound_manager.play_background_music()
     
-    def handle_events(self):
+    def _handle_events(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                self.game_state.running = False
+                self._game_state.set_running(False)
             
             elif event.type == pygame.KEYDOWN:
-                if self.game_state.game_over:
+                if self._game_state.get_game_over():
                     if event.key == pygame.K_r:
-                        self.restart_game()
+                        self._restart_game()
                     elif event.key == pygame.K_ESCAPE:
-                        self.game_state.running = False
+                        self._game_state.set_running(False)
                 else:
                     if event.key == pygame.K_LEFT or event.key == pygame.K_a:
-                        self.player.move_to_lane("L")
+                        self._player.move_to_lane("L")
                     elif event.key == pygame.K_RIGHT or event.key == pygame.K_d:
-                        self.player.move_to_lane("R")
+                        self._player.move_to_lane("R")
                     elif event.key == pygame.K_ESCAPE:
-                        self.game_state.running = False
+                        self._game_state.set_running(False)
     
-    def update_game_logic(self, dt):
-        if self.game_state.game_over:
+    def _update_game_logic(self, dt):
+        if self._game_state.get_game_over():
             return
         
-        self.player.update(dt)
-        self.gate_manager.update(dt, self.game_state.level, self.game_state.speed)
+        self._player.update(dt)
+        self._gate_manager.update(dt, self._game_state.get_level(), self._game_state.get_speed())
         
-        collision_result = self.gate_manager.check_collisions(self.player)
+        collision_result = self._gate_manager.check_collisions(self._player)
         if collision_result is not None:
             if collision_result:
-                self.handle_correct_answer()
+                self._handle_correct_answer()
             else:
-                self.handle_wrong_answer()
+                self._handle_wrong_answer()
         
-        self.game_state.update_level()
+        self._game_state.update_level()
         
-        if self.game_state.lives <= 0:
-            self.game_over()
+        if self._game_state.get_lives() <= 0:
+            self._game_over()
     
-    def handle_correct_answer(self):
-        self.game_state.combo += 1
-        if self.game_state.combo > self.game_state.max_combo:
-            self.game_state.max_combo = self.game_state.combo
+    def _handle_correct_answer(self):
+        new_combo = self._game_state.get_combo() + 1
+        self._game_state.set_combo(new_combo)
+        if new_combo > self._game_state.get_max_combo():
+            self._game_state.set_max_combo(new_combo)
         
-        score_gain = Var.SCORE_GAIN_BASE + (self.game_state.combo - 1) * Var.SCORE_GAIN_COMBO_MULTIPLIER
-        self.game_state.score += score_gain
+        score_gain = Var.SCORE_GAIN_BASE + (new_combo - 1) * Var.SCORE_GAIN_COMBO_MULTIPLIER
+        self._game_state.set_score(self._game_state.get_score() + score_gain)
         
-        self.sound_manager.play_sound('correct')
+        self._sound_manager.play_sound('correct')
     
-    def handle_wrong_answer(self):
-        self.game_state.combo = 0
-        self.game_state.lives -= 1
-        self.game_state.score = max(0, self.game_state.score - Var.SCORE_PENALTY)
+    def _handle_wrong_answer(self):
+        self._game_state.set_combo(0)
+        self._game_state.set_lives(self._game_state.get_lives() - 1)
+        self._game_state.set_score(max(0, self._game_state.get_score() - Var.SCORE_PENALTY))
         
-        self.sound_manager.play_sound('wrong')
+        self._sound_manager.play_sound('wrong')
     
-    def game_over(self):
-        self.game_state.game_over = True
-        self.game_over_screen.set_game_over_data(
-            self.game_state.score,
-            self.game_state.max_combo,
-            self.game_state.level
+    def _game_over(self):
+        self._game_state.set_game_over(True)
+        self._game_over_screen.set_game_over_data(
+            self._game_state.get_score(),
+            self._game_state.get_max_combo(),
+            self._game_state.get_level()
         )
     
-    def restart_game(self):
-        self.game_state.reset()
-        self.gate_manager.clear()
-        self.game_over_screen.show = False
-        self.player.lane = Var.INITIAL_LANE
-        self.player.x = Var.LANE_LEFT_X if self.player.lane == "L" else Var.LANE_RIGHT_X
-        self.player.update_rect()
+    def _restart_game(self):
+        self._game_state.reset()
+        self._gate_manager.clear()
+        self._game_over_screen.set_show(False)
+        self._player.set_lane(Var.INITIAL_LANE)
+        self._player.set_x(Var.LANE_LEFT_X if self._player.get_lane() == "L" else Var.LANE_RIGHT_X)
+        self._player._update_rect()
     
-    def draw_background(self):
-        self.screen.fill(Color.BG)
+    def _draw_background(self):
+        self._screen.fill(Color.BG)
         
-        road_rect = pygame.Rect(0, 0, Var.WIDTH, Var.HEIGHT)
-        pygame.draw.rect(self.screen, Color.ROAD, road_rect)
+        road_margin = 70
+        road_width = Var.WIDTH - (road_margin * 2)
+        
+        road_rect = pygame.Rect(road_margin, 0, road_width, Var.HEIGHT)
+        pygame.draw.rect(self._screen, Color.ROAD, road_rect)
+        
+        pygame.draw.line(self._screen, Color.ROAD_BORDER, (road_margin, 0), (road_margin, Var.HEIGHT), 4)
+        pygame.draw.line(self._screen, Color.ROAD_BORDER, (Var.WIDTH - road_margin, 0), (Var.WIDTH - road_margin, Var.HEIGHT), 4)
         
         for y in range(0, Var.HEIGHT, 50):
-            pygame.draw.line(self.screen, Color.GRAY, (Var.WIDTH//2, y), (Var.WIDTH//2, y + 25), 5)
+            pygame.draw.line(self._screen, Color.ROAD_LINE, (Var.WIDTH//2, y), (Var.WIDTH//2, y + 25), 5)
     
-    def render(self):
-        self.draw_background()
+    def _render(self):
+        self._draw_background()
         
-        self.gate_manager.draw(self.screen, self.font_med)
-        self.player.draw(self.screen)
+        self._gate_manager.draw(self._screen, self._font_med)
+        self._player.draw(self._screen)
         
-        self.game_ui.score = self.game_state.score
-        self.game_ui.level = self.game_state.level
-        self.game_ui.lives = self.game_state.lives
-        self.game_ui.combo = self.game_state.combo
-        self.game_ui.max_combo = self.game_state.max_combo
+        self._game_ui.set_score(self._game_state.get_score())
+        self._game_ui.set_level(self._game_state.get_level())
+        self._game_ui.set_lives(self._game_state.get_lives())
+        self._game_ui.set_combo(self._game_state.get_combo())
+        self._game_ui.set_max_combo(self._game_state.get_max_combo())
         
-        self.game_ui.draw(self.screen, self.font_big, self.font_med, self.font_small)
-        self.game_over_screen.draw(self.screen, self.font_big, self.font_med, self.font_small)
+        next_gate = self._gate_manager.get_next_active_gate()
+        if next_gate:
+            self._game_ui.set_current_operation(next_gate.get_operation())
+        else:
+            self._game_ui.set_current_operation(None)
+        
+        self._game_ui.draw(self._screen, self._font_big, self._font_med, self._font_small)
+        self._game_over_screen.draw(self._screen, self._font_big, self._font_med, self._font_small)
         
         pygame.display.flip()
     
@@ -153,15 +214,15 @@ class Game:
         dt = 0
         
         game_loop_active = True
-        while game_loop_active and self.game_state.running:
-            dt = self.clock.tick(Var.FPS) / 1000.0
+        while game_loop_active and self._game_state.get_running():
+            dt = self._clock.tick(Var.FPS) / 1000.0
             
-            self.handle_events()
-            self.update_game_logic(dt)
-            self.render()
+            self._handle_events()
+            self._update_game_logic(dt)
+            self._render()
             
-            if not self.game_state.running:
+            if not self._game_state.get_running():
                 game_loop_active = False
         
-        self.sound_manager.stop_background_music()
+        self._sound_manager.stop_background_music()
         pygame.quit()
