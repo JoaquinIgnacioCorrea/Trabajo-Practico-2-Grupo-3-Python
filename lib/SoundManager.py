@@ -7,7 +7,7 @@ class SoundManager:
         self.sounds = {}
         self.background_music = None
         self.music_volume = 0.3
-        self.sound_volume = 0.7
+        self.sound_volume = 0.5
         self.load_sounds()
     
     def load_sounds(self):

@@ -1,9 +1,9 @@
 # Punto de acceso al juego
-from lib.Game import Game
+from Menu import Menu
 
 def main():
-    game = Game()
-    game.run()
+    menu = Menu()
+    menu.run()
 
 if __name__ == "__main__":
     main()

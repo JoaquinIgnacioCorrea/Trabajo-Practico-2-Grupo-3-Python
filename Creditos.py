@@ -66,3 +66,69 @@ def obtener_info_juego():
 
 if __name__ == "__main__":
     mostrar_creditos()
+
+# --- Pantalla simple de créditos ---
+import pygame
+import lib.Color as Color
+import lib.Var as Var
+
+class CreditsScreen:
+    def __init__(self, screen=None, clock=None):
+        pygame.init()
+        self.owns_display = screen is None
+        self.screen = screen or pygame.display.set_mode((Var.WIDTH, Var.HEIGHT))
+        self.clock = clock or pygame.time.Clock()
+        pygame.display.set_caption("Créditos - Math Runner")
+
+        self.font_title = pygame.font.SysFont("luckiest guy", 48, bold=True)
+        self.font_text  = pygame.font.SysFont("baloo", 24)
+        self.font_btn   = pygame.font.SysFont("luckiest guy", 28, bold=True)
+
+        self.btn_rect = pygame.Rect(0, 0, 180, 54)
+        self.btn_rect.center = (Var.WIDTH // 2, Var.HEIGHT - 80)
+
+        self.running = True
+
+    def run(self):
+        while self.running:
+            self.clock.tick(Var.FPS)
+            for e in pygame.event.get():
+                if e.type == pygame.QUIT:
+                    self.running = False
+                elif e.type == pygame.KEYDOWN and e.key in (pygame.K_ESCAPE, pygame.K_RETURN):
+                    self.running = False
+                elif e.type == pygame.MOUSEBUTTONDOWN and e.button == 1:
+                    if self.btn_rect.collidepoint(e.pos):
+                        self.running = False
+
+            self._draw()
+
+        if self.owns_display:
+            pygame.quit()
+
+    def _draw(self):
+        self.screen.fill(Color.BG)
+
+        title = self.font_title.render("CRÉDITOS", True, Color.TEXT)
+        self.screen.blit(title, (Var.WIDTH//2 - title.get_width()//2, 40))
+
+        lines = [
+            "Math Runner — TP Grupo 3 (UAI)",
+            "Versión: 1.0.0",
+            "Programación / Arte / Sonido:",
+            "— Equipo Grupo 3",
+            "",
+            "Gracias por jugar y aprender."
+        ]
+        y = 140
+        for line in lines:
+            txt = self.font_text.render(line, True, Color.TEXT)
+            self.screen.blit(txt, (Var.WIDTH//2 - txt.get_width()//2, y))
+            y += 36
+
+        pygame.draw.rect(self.screen, Color.GRAY, self.btn_rect, border_radius=14)
+        pygame.draw.rect(self.screen, Color.TEXT, self.btn_rect, 3, border_radius=14)
+        lbl = self.font_btn.render("VOLVER", True, (255,255,255))
+        self.screen.blit(lbl, lbl.get_rect(center=self.btn_rect.center))
+
+        pygame.display.flip()

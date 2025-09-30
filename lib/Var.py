@@ -4,9 +4,9 @@
 # CONSTANTES DE CONFIGURACIÓN
 # ================================
 # Dimensiones de pantalla
-WIDTH, HEIGHT = 900, 600
-LANE_LEFT_X  = WIDTH // 2 - 120
-LANE_RIGHT_X = WIDTH // 2 + 120
+WIDTH, HEIGHT = 600, 700
+LANE_LEFT_X  = WIDTH // 2 - 110
+LANE_RIGHT_X = WIDTH // 2 + 110
 PLAYER_Y     = HEIGHT - 120
 FPS          = 60
 
@@ -58,3 +58,5 @@ FEEDBACK_DURATION_FRAMES = 0.6
 # ================================
 # Variable global para scroll
 scroll_offset = 0.0
+# Zona segura superior para no pisar HUD
+TOP_SAFE_ZONE = 80

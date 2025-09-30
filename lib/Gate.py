@@ -12,7 +12,7 @@ class Gate:
         
         self.y = -100
         self.width = 200
-        self.height = 120
+        self.height = 100
         self.speed = Var.INITIAL_SPEED
         
         self.left_x = Var.LANE_LEFT_X
@@ -68,7 +68,8 @@ class Gate:
         pygame.draw.rect(screen, Color.DARK, self.right_rect, 3)
         
         operation_text = font.render(self.operation, True, Color.TEXT)
-        operation_rect = operation_text.get_rect(center=(Var.WIDTH//2, self.y - 30))
+        operation_y = max(self.y - 22, Var.TOP_SAFE_ZONE)
+        operation_rect = operation_text.get_rect(center=(Var.WIDTH//2, operation_y))
         screen.blit(operation_text, operation_rect)
         
         left_answer = self.correct_answer if self.correct_lane == "L" else self.wrong_answer

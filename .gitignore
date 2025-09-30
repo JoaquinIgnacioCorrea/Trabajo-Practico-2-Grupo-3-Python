@@ -205,4 +205,5 @@ saves/
 screenshots/
 logs/
 *.save
-lib/__pycache__/
+lib/__pycache__/.venv/
+__pycache__/
